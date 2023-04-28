@@ -15,5 +15,10 @@
   "bugs": {
     "url": "https://github.com/alexisrovezzi/DSI-2023-IVR/issues"
   },
-  "homepage": "https://github.com/alexisrovezzi/DSI-2023-IVR#readme"
+  "homepage": "https://github.com/alexisrovezzi/DSI-2023-IVR#readme",
+  "dependencies": {
+    "nodemon": "^2.0.22",
+    "sequelize": "^6.31.0",
+    "sqlite3": "^5.1.6"
+  }
 }
