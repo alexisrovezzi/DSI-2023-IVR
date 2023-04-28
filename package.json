@@ -1,0 +1,19 @@
+{
+  "name": "dsi-2023-ivr",
+  "version": "1.0.0",
+  "description": "Sistema de respuesta de voz interctiva",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexisrovezzi/DSI-2023-IVR.git"
+  },
+  "author": "DSI 3K6 2023",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alexisrovezzi/DSI-2023-IVR/issues"
+  },
+  "homepage": "https://github.com/alexisrovezzi/DSI-2023-IVR#readme"
+}
