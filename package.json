@@ -4,6 +4,7 @@
   "description": "Sistema de respuesta de voz interctiva",
   "main": "index.js",
   "scripts": {
+    "start": "nodemon ./src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -12,11 +13,13 @@
   },
   "author": "DSI 3K6 2023",
   "license": "ISC",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/alexisrovezzi/DSI-2023-IVR/issues"
   },
   "homepage": "https://github.com/alexisrovezzi/DSI-2023-IVR#readme",
   "dependencies": {
+    "express": "^4.18.2",
     "nodemon": "^2.0.22",
     "sequelize": "^6.31.0",
     "sqlite3": "^5.1.6"
