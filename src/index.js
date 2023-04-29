@@ -11,7 +11,7 @@ app.use(express.json());
 if (await configDB.syncDB()) {
     //app.use("/api",router)
     app.listen(port, () => {
-        console.log("API successfully loaded");
+        console.log("API OK - successfully loaded");
     })
 }
 
