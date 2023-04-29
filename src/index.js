@@ -1,6 +1,5 @@
 import express from "express";
 //import router from "./routes/articulos.js";
-import { sequelize } from "./data/config.js";
 import * as configDB from "./data/config.js";
 const app = express()
 const port = 27015
