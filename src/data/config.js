@@ -14,7 +14,7 @@ export async function syncDB() {
         (async function () {
             try {
                 await sequelize.sync().then(() => {
-                    console.log("DB synchronized");
+                    console.log("DB OK - synchronized");
                 })
                 return true;
             } catch (error) {
