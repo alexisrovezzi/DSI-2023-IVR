@@ -9,10 +9,12 @@ app.use(express.json());
 
 // Verifica la existencia de la BD.
 if (await configDB.syncDB()) {
-    //app.use("/api",router)
+    app.use("/api",router)
     app.listen(port, () => {
         console.log("API OK - successfully loaded");
     })
 }
+else console.log("API ERROR - Could not sync with DB")
+
 
 
