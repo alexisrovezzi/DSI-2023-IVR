@@ -3,15 +3,15 @@ import { Sequelize } from "sequelize";
 import fs, { existsSync } from "fs";
 
 
-export const sequelize = new Sequelize("posts", "", "", {
+export const sequelize = new Sequelize("IVRDB", "", "", {
     dialect: "sqlite",
-    //storage: ".src/data/posts.db",
-    host: ".src/data/IVR.db",
+    storage: "./src/data/IVRDB.db",
+    //host: "./src/data/IVRDB.db",
 })
 
 export async function syncDB() {
-    if (existsSync(".src/data/IVR.db")) {
-        (async function () {
+    try {
+        await fs.access("./src/data/IVRDB.db", (async function () {
             try {
                 await sequelize.sync().then(() => {
                     console.log("DB OK - synchronized");
@@ -21,9 +21,9 @@ export async function syncDB() {
                 console.log("DB ERROR -", error)
                 return false;
             }
-        })()
-    } else {
-        console.log("DB ERROR - database not found")
+        }))
+    } catch (error) {
+        console.log("DB ERROR - database not found", error)
         return false;
     }
 }
