@@ -18,15 +18,22 @@ const generarCSV = async (payload) => {
     const csvWriter = csv.createObjectCsvWriter({
         path: 'archivo.csv',
         header: [
-            { id: 'nombre', title: 'Nombre' },
-            { id: 'apellido', title: 'Apellido' },
-            { id: 'edad', title: 'Edad' }
-        ]
+            { id: 'nombre', title: 'Nombre del cliente' },
+            { id: 'estado', title: 'Estado actual de la llamada' },
+            { id: 'duracion', title: 'Duracion de la llamada en minutos' },
+            { id: 'pregunta', title: ' ' },
+            { id: 'respuesta', title: ' ' },
+        ],
+        //header: payload.sections.flatMap(section => section.header.map(column => ({ id: column, title: column }))),
+
     });
-
     // Escribe los datos en el archivo CSV
-    return csvWriter.writeRecords(payload)
+    await csvWriter.writeRecords(payload.encabezado);
+    await csvWriter.writeRecords(payload.saltoDeLinea);
 
-} 
+     return csvWriter.writeRecords(payload.respuestas)
+        
 
-export {generarCSV};
+}
+
+export { generarCSV };

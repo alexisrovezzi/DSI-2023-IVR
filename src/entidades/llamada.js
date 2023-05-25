@@ -3,9 +3,7 @@
 atributos:
 llamadaId
 descripcionOperador
-detalleAccionRequerida
 duracion
-encuestaEnviada
 observacionAuditor
 clienteId
 
