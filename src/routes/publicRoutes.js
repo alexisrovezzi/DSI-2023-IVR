@@ -1,5 +1,6 @@
 import { Router } from "express";
 export const router = Router();
+import * as gestor from "../controladores/gestorConsultarEncuestas.js"; 
 
 // Por hora las peticiones se hacen publicas. Sin necesidad de token. 
 router.get(`/`, (req,res)=>{
@@ -7,7 +8,12 @@ router.get(`/`, (req,res)=>{
     
 })
 
-// Llamada consultar-encuesta que manda FE
-router.post(`/consultar-encuesta`,)
+// Interceptores de las consultas que manda la pantalla.
+router.post(`/consultar-encuesta`,gestor.obtenerLlamadasConEncuestaRespondida)
+
+router.get(`/llamada/:id`,gestor.obtenerDatosLlamada)
+
+router.get(`/llamada-csv/:id`,gestor.generarCSV)
+
 
 
