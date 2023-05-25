@@ -9,7 +9,7 @@ router.get(`/`, (req,res)=>{
 })
 
 // Interceptores de las consultas que manda la pantalla.
-router.post(`/consultar-encuesta`,gestor.obtenerLlamadasConEncuestaRespondida)
+router.post(`/llamadas-cn-encuesta-resp`,gestor.obtenerLlamadasConEncuestaRespondida)
 
 router.get(`/llamada/:id`,gestor.obtenerDatosLlamada)
 
