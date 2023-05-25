@@ -17,7 +17,7 @@ app.use(express.json());
             console.log("API OK - successfully loaded on Port:", port, "Ip:", ip );
         })
         else app.listen(port, () => {
-            console.log("API OK - successfully loaded on Port:", port);
+            console.log("API OK - successfully loaded on localhost Port:", port);
         })
 
 
