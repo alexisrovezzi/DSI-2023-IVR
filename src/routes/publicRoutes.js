@@ -7,4 +7,7 @@ router.get(`/`, (req,res)=>{
     
 })
 
+// Llamada consultar-encuesta que manda FE
+router.post(`/consultar-encuesta`,)
+
 

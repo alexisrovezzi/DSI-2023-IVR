@@ -6,7 +6,6 @@ import fs, { existsSync } from "fs";
 export const sequelize = new Sequelize("IVRDB", "", "", {
     dialect: "sqlite",
     storage: "./src/data/IVRDB.db",
-    //host: "./src/data/IVRDB.db",
 })
 
 export async function syncDB() {
