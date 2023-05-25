@@ -1,3 +1,15 @@
+/*
+
+atributos:
+encabezado
+preguntas
+
+metodos:
+generarCSV()
+
+
+*/
+
 import * as csv from 'csv-writer'
 
 const generarCSV = async (payload) => {
