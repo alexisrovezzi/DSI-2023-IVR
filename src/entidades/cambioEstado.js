@@ -42,13 +42,13 @@ const CambioEstado = sequelize.define(
     }
 );
 
-CambioEstado.associate = (models) => {
-    CambioEstado.hasOne(models.Estado, { foreignKey: 'estadoId' });
-};
+// CambioEstado.associate = (models) => {
+//     CambioEstado.hasOne(models.Estado, { foreignKey: 'estadoId' });
+// };
 
-CambioEstado.associate = (models) => {
-    CambioEstado.hasOne(models.Llamada, { foreignKey: 'llamadaId' });
-};
+// CambioEstado.associate = (models) => {
+//     CambioEstado.hasOne(models.Llamada, { foreignKey: 'llamadaId' });
+// };
 
 async function esEstadoInicial(){
     // preguntar al estado si es inicial
