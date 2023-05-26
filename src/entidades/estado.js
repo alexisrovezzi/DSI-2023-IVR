@@ -38,7 +38,7 @@ async function esInicial(estadoId) {
         }
       })
       .then((estado) => {
-        return estado?.nombre === "Iniciado";
+        return estado?.nombre === "Iniciada";
       })
       .catch((error) => {
         console.log(error);

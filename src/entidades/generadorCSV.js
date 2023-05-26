@@ -30,7 +30,6 @@ const generarCSV = async (payload) => {
     // Escribe los datos en el archivo CSV
     await csvWriter.writeRecords(payload.encabezado);
     await csvWriter.writeRecords(payload.saltoDeLinea);
-
      return csvWriter.writeRecords(payload.respuestas)
         
 
