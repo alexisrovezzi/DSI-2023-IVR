@@ -8,6 +8,7 @@ nroCelular
 
 metodos:
 getNombre()
+esCliente()
 
 */
 import { DataTypes } from "sequelize";
@@ -39,8 +40,20 @@ const Cliente = sequelize.define(
     }
 );
 
-// Cliente.associate = (models) => {
-//     Cliente.hasMany(models.LLamada, { foreignKey: 'clienteId' });
-//   };
+async function getNombre(clienteId){
+    Cliente.findOne({
+        where: {
+          clienteId: clienteId
+        }
+      })
+      .then((cliente) => {
+        return cliente?.nombreCompleto ?? "Undefined";
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+}
 
-export {Cliente}
+
+
+export {getNombre}
