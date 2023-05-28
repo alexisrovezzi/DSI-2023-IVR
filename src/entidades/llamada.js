@@ -17,8 +17,9 @@ getRespuestas()
 */
 import { DataTypes } from "sequelize";
 import { sequelize } from '../data/config.js';
-import * as ce from './cambioEstado.js';
-import * as c from './cliente.js';
+import * as cambioEstado from './cambioEstado.js';
+import * as cliente from './cliente.js';
+import * as respuestaDeCliente from './respuestasDeCliente.js';
 
 const Llamada = sequelize.define(
     "Llamadas",
@@ -51,15 +52,16 @@ const Llamada = sequelize.define(
 );
 
 async function tieneEncuestaRespondida() {
-    // DURASO tiene que llamar a getrespuestas despues 
-    // con esas respuestas debe llamar al getfechaencuesta 
-    // ¿de las respuestas del cliente y despues estado inicial??
-
-    // lo cambie:
     /* 
-    
+        tiene encuesta respondida deberia ver si posee punteros
      */
-}
+};
+async function esDePeriodo(params){
+    /* 
+    deberia revisar si esta dentro del periodo que se manda por parametro
+    */
+
+};
 async function obtenerNombreCliente(llamadaId) {
     Llamada.findOne({
         where: {
@@ -67,15 +69,15 @@ async function obtenerNombreCliente(llamadaId) {
         }
     })
         .then(async (llamada) => {
-            return await c.getNombre(llamada.clienteId);
+            return await cliente.getNombre(llamada.clienteId);
         })
         .catch((error) => {
             console.log(error);
         });
 }
 async function getEstadoActual(llamadaId) {
-    const ultimoCambioEstado = await ce.esUltimoEstado(llamadaId);
-    return await ce.getNombreEstado(ultimoCambioEstado);
+    const ultimoCambioEstado = await cambioEstado.esUltimoEstado(llamadaId);
+    return await cambioEstado.getNombreEstado(ultimoCambioEstado);
 }
 async function getDuracion(llamadaId) {
     Llamada.findOne({
@@ -90,18 +92,17 @@ async function getDuracion(llamadaId) {
             console.log(error);
         });
 }
-async function getRespuestas() {
-    // ir a respuestas de cliente y obtener los punteros 
-    //de las respuetas posibles obtener la fecha encuesta 
-    //y la descrupcion de las respuestas posibles dadas
+async function getRespuestas(llamadaId) {
+    await respuestaDeCliente.obtenerDatosDeRespuestas(llamadaId)
 }
 
-async function obtenerDatosGeneralesLlamada() {
-    // obtener nombre de cliente, get estadoactual,
-    // get duracion, get respuestas
-    // devolver todo eso
+async function obtenerDatosGeneralesLlamada(llamadaId) {
+    const response = {};
+    response.cliente = cliente.getNombre(llamadaId);
+    response.estadoActual = getEstadoActual(llamadaId);
+    response.duracion = getDuracion(llamadaId);
+    response.respuestas = await getRespuestas(llamadaId);
+    return response;
  }
 
-
-
-export { tieneEncuestaRespondida, obtenerNombreCliente, getEstadoActual, getDuracion, getRespuestas, obtenerDatosGeneralesLlamada }
+export {esDePeriodo, tieneEncuestaRespondida, obtenerNombreCliente, getEstadoActual, getDuracion, getRespuestas, obtenerDatosGeneralesLlamada }

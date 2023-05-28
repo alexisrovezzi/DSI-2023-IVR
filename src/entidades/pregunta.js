@@ -14,6 +14,7 @@ tieneRespuestasPosibles()
 
 import { DataTypes } from "sequelize";
 import { sequelize } from '../data/config.js';
+import * as respuestaPosible from './respuestaPosible.js';
 
 const Pregunta = sequelize.define(
     "Preguntas",
@@ -51,12 +52,36 @@ async function getDescripcion(preguntaId) {
         });
 }
 
-async function esEncuestaDeCliente() {
-    // llamar a respuestas posibles y comparar con las respuestas de cliente
+async function esEncuestaDeCliente(params) {
+    await Pregunta.findAll({
+        where: {
+            encuestaId: params.encuestaId
+        }
+    })
+        .then(async (preguntas) => {
+            for (const pregunta of preguntas) {
+                const idRespuestasPosibles = await tieneRespuestasPosibles(pregunta.preguntaId);
+                const esEncuestaDeCliente =  params.respuestasDeClientePosiblesId.some(x => idRespuestasPosibles.includes(x))
+                return esEncuestaDeCliente;
+            }
+        })
+        .catch((error) => {
+            console.log(error);
+        });
 };
 
-async function tieneRespuestasPosibles() {
-    // supongo que este metodo debe devolver los punteros de las respuestas posibles
+async function tieneRespuestasPosibles(preguntaId) {
+    await respuestaPosible.RespuestaPosible.findAll({
+        where: {
+            preguntaId: preguntaId
+        }
+    })
+        .then((respuestasPosibles) => {
+            return respuestasPosibles.map(x => x.respuestaPosibleId);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
 };
 
-export { getDescripcion, esEncuestaDeCliente, tieneRespuestasPosibles }
+export {Pregunta, getDescripcion, esEncuestaDeCliente, tieneRespuestasPosibles }

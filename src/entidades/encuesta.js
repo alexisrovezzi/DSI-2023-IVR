@@ -14,6 +14,7 @@ obtenerPreguntas()
 */
 import { DataTypes } from "sequelize";
 import { sequelize } from '../data/config.js';
+import * as pregunta from './pregunta.js';
 
 const Encuesta = sequelize.define(
     "Encuestas",
@@ -64,11 +65,41 @@ async function getDescripcion(encuestaId) {
         });
 }
 async function obtenerPreguntas(encuestaId) {
-    // Pregunta.obtenerPreguntas(encuestaId);
-    // return Pregunta.obtenerPreguntas(encuestaId);
+    const response = [];
+    pregunta.Pregunta.findAll({
+        where: {
+            encuestaId: encuestaId
+        }
+    }).then(async (preguntas) => {
+        for (const preguntaItem of preguntas) {
+            const preguntaDatos = {
+                preguntaId: preguntaItem.preguntaId,
+                descripcion: await pregunta.getDescripcion(preguntaItem.preguntaId)
+            }
+            response.push(preguntaDatos);
+        }
+
+    }).catch((error) => {
+        console.log(error);
+    });
+    return response;
 }
-async function esEncuestaDeCliente(encuestaId) {
-    // Pregunta.esEncuestaDeCliente(payload) 
+async function esEncuestaDeCliente(idRespuestasPosibles) {
+    Encuesta.findAll()
+        .then(async (encuestas) => {
+            for (const encuesta of encuestas) {
+                const payload = { encuestaId: encuesta.encuestaId, respuestasDeClientePosiblesId: idRespuestasPosibles };
+                let esEncuestaDeClienteBandera = await pregunta.esEncuestaDeCliente(payload);
+                if (esEncuestaDeClienteBandera) {
+                    return encuesta.encuestaId;
+                    break;
+                }
+            }
+            return -1;
+        })
+        .catch((error) => {
+            console.log(error);
+        });
 }
 
 

@@ -43,9 +43,23 @@ const CambioEstado = sequelize.define(
     }
 );
 
-async function esEstadoInicial(){
+async function esEstadoInicial(llamadaId){
     // preguntar al estado si es inicial
-
+    CambioEstado.findOne({
+      where: {
+          llamadaId: llamadaId
+      },
+      order: [['fechaHoraInicio', 'ASC']]
+    })
+    .then(async (cambioEstado) => {
+      console.log(cambioEstado);
+      const esIncial = await e.esInicial(cambioEstado.estadoId);
+      if (esIncial) return cambioEstado.fechaHoraInicio;
+      else return null;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 }
 async function esUltimoEstado(llamadaId){
     // Obtener el último cambio de estado
