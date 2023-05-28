@@ -15,6 +15,7 @@ getNombreEstado()
 
 import { DataTypes } from "sequelize";
 import { sequelize } from '../data/config.js';
+import * as e from './estado.js';
 
 const CambioEstado = sequelize.define(
     "CambioEstados",
@@ -42,20 +43,12 @@ const CambioEstado = sequelize.define(
     }
 );
 
-// CambioEstado.associate = (models) => {
-//     CambioEstado.hasOne(models.Estado, { foreignKey: 'estadoId' });
-// };
-
-// CambioEstado.associate = (models) => {
-//     CambioEstado.hasOne(models.Llamada, { foreignKey: 'llamadaId' });
-// };
-
 async function esEstadoInicial(){
     // preguntar al estado si es inicial
 
 }
 async function esUltimoEstado(llamadaId){
-    // preguntar es el ultimo cambio de estado
+    // Obtener el último cambio de estado
     CambioEstado.findOne({
         where: {
             llamadaId: llamadaId
@@ -102,7 +95,7 @@ async function newCambioEstado(payload){
         });
 }
 async function getNombreEstado(estadoId){
-    // llamar a estado para obtener su nombre
+  return await e.getNombre(estadoId);
 }
 
-export {esEstadoInicial, esUltimoEstado, getFechaHoraInicio, newCambioEstado, getNombreEstado}
+export {CambioEstado, esEstadoInicial, esUltimoEstado, getFechaHoraInicio, newCambioEstado, getNombreEstado}
