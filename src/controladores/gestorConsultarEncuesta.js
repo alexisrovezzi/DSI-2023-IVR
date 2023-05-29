@@ -2,7 +2,8 @@ import * as generadorCSV from '../entidades/generadorCSV.js'
 
 const obtenerLlamadasConEncuestaRespondida = async (req, res) => {
     const body = req.body;
-    console.log("🚀 ~ file: gestorConsultarEncuesta.js:5 ~ obtenerLlamadasConEncuestaRespondida ~ body:", body)
+    let consult = new Date;
+    console.log("🚀 ~ file: gestorConsultarEncuesta.js:5 ~ obtenerLlamadasConEncuestaRespondida ~ body:", body, consult)
     let respuesta = [
         {
             llamadaId: 1,
@@ -20,6 +21,8 @@ const obtenerLlamadasConEncuestaRespondida = async (req, res) => {
 }
 
 const obtenerDatosLlamada = async (req, res) => {
+    let consult = new Date;
+    console.log("🚀 ~ file: gestorConsultarEncuesta.js:25 ~ obtenerDatosLlamada ~ consult:", consult)
     let respuesta = {
         cliente: "Juan Picapiedra",
         estadoActual: "Iniciado",
@@ -40,6 +43,8 @@ const obtenerDatosLlamada = async (req, res) => {
 }
 
 const generarCSV = async (req, res) => {
+    let consult = new Date;
+    console.log("🚀 ~ file: gestorConsultarEncuesta.js:47 ~ generarCSV ~ consult:", consult)
     let payload = {
         encabezado: [
             { nombre: 'Juan Picapiedra', estado: 'Iniciada', duracion: 25 },
