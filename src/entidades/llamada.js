@@ -51,16 +51,40 @@ const Llamada = sequelize.define(
     }
 );
 
-async function tieneEncuestaRespondida() {
+async function tieneEncuestaRespondida(llamadasArray) {
+    for (const llamadaItem of llamadasArray) {
+        respuestaDeCliente.RespuestaDeCliente.findAll()
+        .then(async (llamadas) => {
+            for (const llamadaItem of llamadas) {
+                let fechaHoraEstadoInicial = new Date(await cambioEstado.esEstadoInicial(llamadaItem.llamadaId));
+                if (fechaHoraEstadoInicial >= new Date(params.fechaDesde) && fechaHoraEstadoInicial <= new Date(params.fechaHasta)) {
+                    llamadas.push(llamadaItem);
+                }
+            }
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+    }
     /* 
         tiene encuesta respondida deberia ver si posee punteros
      */
 };
-async function esDePeriodo(params){
-    /* 
-    deberia revisar si esta dentro del periodo que se manda por parametro
-    */
-
+async function esDePeriodo(params) {
+    const llamadas = [];
+    Llamada.findAll()
+        .then(async (llamadas) => {
+            for (const llamadaItem of llamadas) {
+                let fechaHoraEstadoInicial = new Date(await cambioEstado.esEstadoInicial(llamadaItem.llamadaId));
+                if (fechaHoraEstadoInicial >= new Date(params.fechaDesde) && fechaHoraEstadoInicial <= new Date(params.fechaHasta)) {
+                    llamadas.push(llamadaItem);
+                }
+            }
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+    return llamadas;
 };
 async function obtenerNombreCliente(llamadaId) {
     Llamada.findOne({
@@ -103,6 +127,6 @@ async function obtenerDatosGeneralesLlamada(llamadaId) {
     response.duracion = getDuracion(llamadaId);
     response.respuestas = await getRespuestas(llamadaId);
     return response;
- }
+}
 
-export {esDePeriodo, tieneEncuestaRespondida, obtenerNombreCliente, getEstadoActual, getDuracion, getRespuestas, obtenerDatosGeneralesLlamada }
+export { esDePeriodo, tieneEncuestaRespondida, obtenerNombreCliente, getEstadoActual, getDuracion, getRespuestas, obtenerDatosGeneralesLlamada }
