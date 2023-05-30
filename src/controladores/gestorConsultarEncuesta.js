@@ -1,4 +1,12 @@
+import fs, { existsSync } from "fs";
 import * as generadorCSV from '../entidades/generadorCSV.js'
+import * as llamada from '../entidades/llamada.js';
+import * as encuesta from '../entidades/encuesta.js';
+
+
+const consultarEncuesta = async (req, res) => {
+    res.status(200).json({ message: "API-IVR Publica" })
+}
 
 const tomarPeriodoAFiltrar = async (req, res) => {
     const periodo = req.body;
@@ -6,63 +14,96 @@ const tomarPeriodoAFiltrar = async (req, res) => {
     console.log("🚀 ~ file: gestorConsultarEncuesta.js:6 ~ tomarPeriodoAFiltrar ~ consult:", consult)
     const respuesta = await buscarLlamadasConEncuestaRespondida(periodo);
     if (respuesta.length > 0) res.status(200).json(respuesta);
-    else res.status(404).json({mensaje: "No hay llamadas en el período con encuestas respondidas."});
+    else res.status(404).json({ mensaje: "No hay llamadas en el período con encuestas respondidas." });
 };
 
-const tomarSeleccionLlamada = async (req, res)=>{
-    const llamadaId = req.params.llamadaId
+const tomarSeleccionLlamada = async (req, res) => {
+    const llamadaId = req.params.llamadaId;
     const llamada = await buscarDatosLlamada(llamadaId);
     const encuesta = await obtenerDatosEncuesta(llamada.fechaRespuestaCliente)
-    return llamada;
+    res.status(200).json(llamada);
 }
 
 const opcionGenerarCSV = async (req, res) => {
     const payload = req.body;
-    return await generarCSV(payload);
+    if (await generarCSV(payload)) {
+        res.download('archivo.csv', 'archivo.csv', (err) => {
+            if (err) {
+                console.error('Error al descargar el archivo CSV:', err);
+                res.status(500).send('Error al descargar el archivo CSV');
+            }
+        });
+    };
+    finCU44();
+}
+
+const finCU44 = async () => {
+    const filePath = '../../archivo.csv';
+    fs.unlink(filePath, (err) => {
+        if (err) {
+            console.error('Error al borrar el archivo:', err);
+            return;
+        }
+
+        console.log('Archivo borrado exitosamente.');
+    });
+
 }
 
 const buscarLlamadasConEncuestaRespondida = async (periodo) => {
     console.log("🚀 ~ file: gestorConsultarEncuesta.js:17 ~ obtenerLlamadasConEncuestaRespondida ~ periodo:", periodo)
-    let llamadas = [
-        {
-            llamadaId: 1,
-            descripcionOperador: "Primera llamada cliente 1",
-            duracion: "36min",
-        },
-        {
-            llamadaId: 2,
-            descripcionOperador: "Segunda llamada cliente 1",
-            duracion: "24min",
-        },
-    ]
-    return llamadas;
+    let llamadas = [];
+    llamadas = await llamada.esDePeriodo(periodo);
+    llamadas = await llamada.tieneEncuestaRespondida(llamadas);
+    const response = {}
+    // let llamadas = [
+    //     {
+    //         llamadaId: 1,
+    //         descripcionOperador: "Primera llamada cliente 1",
+    //         duracion: "36min",
+    //     },
+    //     {
+    //         llamadaId: 2,
+    //         descripcionOperador: "Segunda llamada cliente 1",
+    //         duracion: "24min",
+    //     },
+    // ]
+    return response;
 }
 
 const buscarDatosLlamada = async (llamadaId) => {
     let consult = new Date;
     console.log("🚀 ~ file: gestorConsultarEncuesta.js:25 ~ buscarDatosLlamada ~ consult:", consult)
-    let respuesta = {
-        cliente: "Juan Picapiedra",
-        estadoActual: "Iniciado",
-        duracion: "25min",
-        respuestas: [
-            {
-                descRespuesta: "Sudamérica.",
-                descPregunta: "¿En qué continente se encuentra Brasil?",
-            },
-            {
-                descRespuesta: "París.",
-                descPregunta: "¿Cuál es la capital de Francia?",
-            },
-        ],
-        descEncuesta: "Cultura general"
-    };
-    res.status(200).json(respuesta);
+    let datosLlamada = {};
+    datosLlamada = await llamada.obtenerDatosGeneralesLlamada(llamadaId);
+    let datosEncuesta = {};
+    datosEncuesta = obtenerDatosEncuesta(datosLlamada.respuestasDeCliente[0].fechaRespuestaCliente);
+    const response = {}
+    // let respuesta = {
+    //     cliente: "Juan Picapiedra",
+    //     estadoActual: "Iniciado",
+    //     duracion: "25min",
+    //     respuestas: [
+    //         {
+    //             descRespuesta: "Sudamérica.",
+    //             descPregunta: "¿En qué continente se encuentra Brasil?",
+    //         },
+    //         {
+    //             descRespuesta: "París.",
+    //             descPregunta: "¿Cuál es la capital de Francia?",
+    //         },
+    //     ],
+    //     descEncuesta: "Cultura general"
+    // };
+    res.status(200).json(response);
 }
 
 const obtenerDatosEncuesta = async (fechaRespuestaCliente) => {
-    const encuesta = {};
-    return encuesta;
+    const encuestaDatos = {};
+    encuestaDatos.encuestaDeCliente = await encuesta.esEncuestaDeCliente(fechaRespuestaCliente);
+    encuestaDatos.descripcionEncuesta =  await  encuesta.getDescripcionEncuesta(encuestaDeCliente);
+    encuestaDatos.preguntasDeEncuesta = await encuesta.obtenerPreguntas(encuestaDeCliente);
+    return encuestaDatos;
 }
 
 const generarCSV = async (req, res) => {
@@ -89,16 +130,10 @@ const generarCSV = async (req, res) => {
             { pregunta: '¿Cuál es el autor de la famosa novela "Cien años de soledad"?', respuesta: "Gabriel García Márquez." },
         ]
     }
-    
+
     generadorCSV.generarCSV(payload)
         .then(() => {
-            // Envía el archivo CSV como respuesta
-            res.download('archivo.csv', 'archivo.csv', (err) => {
-                if (err) {
-                    console.error('Error al descargar el archivo CSV:', err);
-                    res.status(500).send('Error al descargar el archivo CSV');
-                }
-            });
+            return true;
         })
         .catch((err) => {
             console.error('Error al escribir los registros en el archivo CSV:', err);
@@ -107,4 +142,4 @@ const generarCSV = async (req, res) => {
 
 }
 
-export { tomarPeriodoAFiltrar, tomarSeleccionLlamada, opcionGenerarCSV }
+export { consultarEncuesta, tomarPeriodoAFiltrar, tomarSeleccionLlamada, opcionGenerarCSV }
