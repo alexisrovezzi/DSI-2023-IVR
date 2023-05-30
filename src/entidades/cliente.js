@@ -37,6 +37,7 @@ const Cliente = sequelize.define(
     },
     {
         sequelize,
+        timestamps: false
     }
 );
 

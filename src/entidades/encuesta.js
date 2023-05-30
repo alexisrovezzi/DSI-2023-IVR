@@ -35,6 +35,7 @@ const Encuesta = sequelize.define(
     },
     {
         sequelize,
+        timestamps: false
     }
 );
 

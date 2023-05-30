@@ -48,6 +48,7 @@ const Llamada = sequelize.define(
     },
     {
         sequelize,
+        timestamps: false
     }
 );
 

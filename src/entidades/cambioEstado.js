@@ -40,6 +40,7 @@ const CambioEstado = sequelize.define(
   },
   {
     sequelize,
+    timestamps: false
   }
 );
 

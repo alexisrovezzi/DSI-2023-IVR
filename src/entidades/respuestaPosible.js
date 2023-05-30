@@ -37,6 +37,7 @@ const RespuestaPosible = sequelize.define(
     },
     {
         sequelize,
+        timestamps: false
     }
 );
 

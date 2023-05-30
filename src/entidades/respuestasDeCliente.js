@@ -40,6 +40,7 @@ const RespuestaDeCliente = sequelize.define(
     },
     {
         sequelize,
+        timestamps: false
     }
 );
 

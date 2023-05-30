@@ -29,6 +29,7 @@ const Estado = sequelize.define(
     },
     {
         sequelize,
+        timestamps: false
     }
 );
 async function esInicial(estadoId) {

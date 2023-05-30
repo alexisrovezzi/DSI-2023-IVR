@@ -35,6 +35,7 @@ const Pregunta = sequelize.define(
     },
     {
         sequelize,
+        timestamps: false
     }
 );
 
