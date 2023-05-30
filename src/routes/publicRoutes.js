@@ -9,11 +9,11 @@ router.get(`/`, (req,res)=>{
 })
 
 // Interceptores de las consultas que manda la pantalla.
-router.get(`/llamadas-cn-encuesta-resp`,gestor.obtenerLlamadasConEncuestaRespondida)
+router.get(`/llamadas-cn-encuesta-resp`,gestor.tomarPeriodoAFiltrar)
 
-router.get(`/llamada/:id`,gestor.obtenerDatosLlamada)
+router.get(`/llamada/:id`,gestor.tomarSeleccionLlamada)
 
-router.get(`/llamada-csv/:id`,gestor.generarCSV)
+router.get(`/llamada-csv/:id`,gestor.opcionGenerarCSV)
 
 
 

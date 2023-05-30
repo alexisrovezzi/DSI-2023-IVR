@@ -1,10 +1,29 @@
 import * as generadorCSV from '../entidades/generadorCSV.js'
 
-const obtenerLlamadasConEncuestaRespondida = async (req, res) => {
-    const body = req.body;
+const tomarPeriodoAFiltrar = async (req, res) => {
+    const periodo = req.body;
     let consult = new Date;
-    console.log("🚀 ~ file: gestorConsultarEncuesta.js:5 ~ obtenerLlamadasConEncuestaRespondida ~ body:", body, consult)
-    let respuesta = [
+    console.log("🚀 ~ file: gestorConsultarEncuesta.js:6 ~ tomarPeriodoAFiltrar ~ consult:", consult)
+    const respuesta = await buscarLlamadasConEncuestaRespondida(periodo);
+    if (respuesta.length > 0) res.status(200).json(respuesta);
+    else res.status(404).json({mensaje: "No hay llamadas en el período con encuestas respondidas."});
+};
+
+const tomarSeleccionLlamada = async (req, res)=>{
+    const llamadaId = req.params.llamadaId
+    const llamada = await buscarDatosLlamada(llamadaId);
+    const encuesta = await obtenerDatosEncuesta(llamada.fechaRespuestaCliente)
+    return llamada;
+}
+
+const opcionGenerarCSV = async (req, res) => {
+    const payload = req.body;
+    return await generarCSV(payload);
+}
+
+const buscarLlamadasConEncuestaRespondida = async (periodo) => {
+    console.log("🚀 ~ file: gestorConsultarEncuesta.js:17 ~ obtenerLlamadasConEncuestaRespondida ~ periodo:", periodo)
+    let llamadas = [
         {
             llamadaId: 1,
             descripcionOperador: "Primera llamada cliente 1",
@@ -16,13 +35,12 @@ const obtenerLlamadasConEncuestaRespondida = async (req, res) => {
             duracion: "24min",
         },
     ]
-
-    res.status(200).json(respuesta);
+    return llamadas;
 }
 
-const obtenerDatosLlamada = async (req, res) => {
+const buscarDatosLlamada = async (llamadaId) => {
     let consult = new Date;
-    console.log("🚀 ~ file: gestorConsultarEncuesta.js:25 ~ obtenerDatosLlamada ~ consult:", consult)
+    console.log("🚀 ~ file: gestorConsultarEncuesta.js:25 ~ buscarDatosLlamada ~ consult:", consult)
     let respuesta = {
         cliente: "Juan Picapiedra",
         estadoActual: "Iniciado",
@@ -40,6 +58,11 @@ const obtenerDatosLlamada = async (req, res) => {
         descEncuesta: "Cultura general"
     };
     res.status(200).json(respuesta);
+}
+
+const obtenerDatosEncuesta = async (fechaRespuestaCliente) => {
+    const encuesta = {};
+    return encuesta;
 }
 
 const generarCSV = async (req, res) => {
@@ -66,9 +89,7 @@ const generarCSV = async (req, res) => {
             { pregunta: '¿Cuál es el autor de la famosa novela "Cien años de soledad"?', respuesta: "Gabriel García Márquez." },
         ]
     }
-
-
-
+    
     generadorCSV.generarCSV(payload)
         .then(() => {
             // Envía el archivo CSV como respuesta
@@ -86,4 +107,4 @@ const generarCSV = async (req, res) => {
 
 }
 
-export { obtenerLlamadasConEncuestaRespondida, obtenerDatosLlamada, generarCSV }
+export { tomarPeriodoAFiltrar, tomarSeleccionLlamada, opcionGenerarCSV }
