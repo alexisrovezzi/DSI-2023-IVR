@@ -5,12 +5,14 @@ import * as encuesta from '../entidades/encuesta.js';
 
 
 const consultarEncuesta = async (req, res) => {
+    let consult = (new Date()).toString();
+    console.log("🚀 ~ file: gestorConsultarEncuesta.js:9 ~ consultarEncuesta ~ consult:", consult)
     res.status(200).json({ message: "API-IVR Publica" })
 }
 
 const tomarPeriodoAFiltrar = async (req, res) => {
     const periodo = req.body;
-    let consult = new Date;
+    let consult = (new Date()).toString();
     console.log("🚀 ~ file: gestorConsultarEncuesta.js:6 ~ tomarPeriodoAFiltrar ~ consult:", consult)
     const respuesta = await buscarLlamadasConEncuestaRespondida(periodo);
     if (respuesta.length > 0) res.status(200).json(respuesta);
@@ -18,6 +20,8 @@ const tomarPeriodoAFiltrar = async (req, res) => {
 };
 
 const tomarSeleccionLlamada = async (req, res) => {
+    let consult = (new Date()).toString();
+    console.log("🚀 ~ file: gestorConsultarEncuesta.js:24 ~ tomarSeleccionLlamada ~ consult:", consult)
     const llamadaId = req.params.llamadaId;
     const llamada = await buscarDatosLlamada(llamadaId);
     const encuesta = await obtenerDatosEncuesta(llamada.fechaRespuestaCliente)
@@ -25,6 +29,8 @@ const tomarSeleccionLlamada = async (req, res) => {
 }
 
 const opcionGenerarCSV = async (req, res) => {
+    let consult = (new Date()).toString();
+    console.log("🚀 ~ file: gestorConsultarEncuesta.js:33 ~ opcionGenerarCSV ~ consult:", consult)
     const payload = req.body;
     if (await generarCSV(payload)) {
         res.download('archivo.csv', 'archivo.csv', (err) => {
@@ -38,6 +44,8 @@ const opcionGenerarCSV = async (req, res) => {
 }
 
 const finCU44 = async () => {
+    let consult = (new Date()).toString();
+    console.log("🚀 ~ file: gestorConsultarEncuesta.js:48 ~ finCU44 ~ consult:", consult)
     const filePath = '../../archivo.csv';
     fs.unlink(filePath, (err) => {
         if (err) {
@@ -51,7 +59,8 @@ const finCU44 = async () => {
 }
 
 const buscarLlamadasConEncuestaRespondida = async (periodo) => {
-    console.log("🚀 ~ file: gestorConsultarEncuesta.js:17 ~ obtenerLlamadasConEncuestaRespondida ~ periodo:", periodo)
+    let consult = (new Date()).toString();
+    console.log("🚀 ~ file: gestorConsultarEncuesta.js:63 ~ buscarLlamadasConEncuestaRespondida ~ consult:", consult, "periodo", periodo)
     let llamadas = [];
     llamadas = await llamada.esDePeriodo(periodo);
     llamadas = await llamada.tieneEncuestaRespondida(llamadas);
@@ -72,7 +81,7 @@ const buscarLlamadasConEncuestaRespondida = async (periodo) => {
 }
 
 const buscarDatosLlamada = async (llamadaId) => {
-    let consult = new Date;
+    let consult = (new Date()).toString();
     console.log("🚀 ~ file: gestorConsultarEncuesta.js:25 ~ buscarDatosLlamada ~ consult:", consult)
     let datosLlamada = {};
     datosLlamada = await llamada.obtenerDatosGeneralesLlamada(llamadaId);
@@ -107,7 +116,7 @@ const obtenerDatosEncuesta = async (fechaRespuestaCliente) => {
 }
 
 const generarCSV = async (req, res) => {
-    let consult = new Date;
+    let consult = (new Date()).toString();
     console.log("🚀 ~ file: gestorConsultarEncuesta.js:47 ~ generarCSV ~ consult:", consult)
     let payload = {
         encabezado: [
