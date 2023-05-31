@@ -32,18 +32,20 @@ const Estado = sequelize.define(
         timestamps: false
     }
 );
-async function esInicial(estadoId) {
-    Estado.findOne({
+async function esFinalizada(estadoId) {
+    let estadoEsFinalizada = false;
+    await Estado.findOne({
         where: {
             estadoId: estadoId,
         }
       })
       .then((estado) => {
-        return estado?.nombre === "Iniciada";
+        estadoEsFinalizada = (estado?.nombre === "Finalizada");
       })
       .catch((error) => {
         console.log(error);
       });
+    return estadoEsFinalizada;
 }
 async function getNombre(estadoId) {
     Estado.findOne({
@@ -62,4 +64,4 @@ async function getNombre(estadoId) {
 
 
 
-export { getNombre, esInicial }
+export { getNombre, esFinalizada }

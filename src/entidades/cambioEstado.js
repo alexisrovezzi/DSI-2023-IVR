@@ -15,7 +15,7 @@ getNombreEstado()
 
 import { DataTypes } from "sequelize";
 import { sequelize } from '../data/config.js';
-import * as e from './estado.js';
+import * as estado from './estado.js';
 
 const CambioEstado = sequelize.define(
   "CambioEstados",
@@ -54,7 +54,7 @@ async function esEstadoInicial(llamadaId) {
   })
     .then(async (cambiosEstado) => {
       for (const cambioEstadoItem of cambiosEstado) {
-        const esIncial = await e.esInicial(cambioEstadoItem.estadoId);
+        const esIncial = await estado.esInicial(cambioEstadoItem.estadoId);
         if (esIncial) return cambioEstadoItem.fechaHoraInicio;
       }
       return null;
@@ -63,21 +63,43 @@ async function esEstadoInicial(llamadaId) {
       console.log(error);
     });
 }
+async function esFinalizada(cambioEstadoId) {
+  let fechaHoraInicioEstadoFinalizado = null;
+  // preguntar al estado si es finalizado
+  await CambioEstado.findOne({
+    where: {
+      cambioEstadoId: cambioEstadoId
+    }
+  })
+    .then(async (cambioEstado) => {
+      const esFinal = await estado.esFinalizada(cambioEstado.estadoId);
+      if (esFinal) {
+        fechaHoraInicioEstadoFinalizado = cambioEstado.fechaHoraInicio;
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  return fechaHoraInicioEstadoFinalizado;
+}
 async function esUltimoEstado(llamadaId) {
+  let ultimoCambioEstadoId = -1
   // Obtener el último cambio de estado
-  CambioEstado.findOne({
+  await CambioEstado.findOne({
     where: {
       llamadaId: llamadaId
     },
     order: [['fechaHoraInicio', 'DESC']]
   })
     .then((cambioEstado) => {
-      console.log(cambioEstado);
-      return cambioEstado.cambioEstadoId;
+      console.log("🚀 ~ file: cambioEstado.js:96 ~ .then ~ cambioEstado.cambioEstadoId:", cambioEstado.cambioEstadoId, "llamadaId", llamadaId)
+      ultimoCambioEstadoId = cambioEstado.cambioEstadoId;
     })
     .catch((error) => {
       console.log(error);
+
     });
+  return ultimoCambioEstadoId;
 }
 async function getFechaHoraInicio(cambioEstadoId) {
   CambioEstado.findOne({
@@ -111,7 +133,7 @@ async function newCambioEstado(payload) {
     });
 }
 async function getNombreEstado(estadoId) {
-  return await e.getNombre(estadoId);
+  return await estado.getNombre(estadoId);
 }
 
-export { CambioEstado, esEstadoInicial, esUltimoEstado, getFechaHoraInicio, newCambioEstado, getNombreEstado }
+export { CambioEstado, esFinalizada, esEstadoInicial, esUltimoEstado, getFechaHoraInicio, newCambioEstado, getNombreEstado }

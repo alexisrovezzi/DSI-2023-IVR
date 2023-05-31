@@ -15,7 +15,7 @@ const tomarPeriodoAFiltrar = async (req, res) => {
     let consult = (new Date()).toString();
     console.log("🚀 ~ file: gestorConsultarEncuesta.js:6 ~ tomarPeriodoAFiltrar ~ consult:", consult)
     const respuesta = await buscarLlamadasConEncuestaRespondida(periodo);
-    if (respuesta.length > 0) res.status(200).json(respuesta);
+    if (respuesta.llamadas.length > 0) res.status(200).json(respuesta);
     else res.status(404).json({ mensaje: "No hay llamadas en el período con encuestas respondidas." });
 };
 
@@ -63,8 +63,9 @@ const buscarLlamadasConEncuestaRespondida = async (periodo) => {
     console.log("🚀 ~ file: gestorConsultarEncuesta.js:63 ~ buscarLlamadasConEncuestaRespondida ~ consult:", consult, "periodo", periodo)
     let llamadas = [];
     llamadas = await llamada.esDePeriodo(periodo);
-    llamadas = await llamada.tieneEncuestaRespondida(llamadas);
-    const response = {}
+    console.log("🚀 ~ file: gestorConsultarEncuesta.js:66 ~ buscarLlamadasConEncuestaRespondida ~ llamadas:", llamadas)
+    // llamadas = await llamada.tieneEncuestaRespondida(llamadas);
+    const response = { llamadas }
     // let llamadas = [
     //     {
     //         llamadaId: 1,

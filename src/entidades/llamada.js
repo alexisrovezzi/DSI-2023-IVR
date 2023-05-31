@@ -80,26 +80,22 @@ async function tieneEncuestaRespondida(llamadasArray) {
      */
 };
 async function esDePeriodo(params) {
-    const llamadas = [];
-    Llamada.findAll()
+    const llamadasDentroPeriodo = [];
+    await Llamada.findAll()
         .then(async (llamadas) => {
-            console.log("🚀 ~ file: llamada.js:78 ~ esDePeriodo ~ Llamada.findAll ~ llamadas:", llamadas)
             for (const llamadaItem of llamadas) {
-                console.log("🚀 ~ file: llamada.js:80 ~ esDePeriodo ~ Llamada.findAll ~ for (const llamadaItem of llamadas) ~ llamadaItem:", llamadaItem)
                 let cambioEstadoActual = await cambioEstado.esUltimoEstado(llamadaItem.llamadaId);
-                console.log("🚀 ~ file: llamada.js:82 ~ cambioEstado.esUltimoEstado ~ cambioEstadoActual:", cambioEstadoActual)
                 let fechaHoraEstadoFinalizado = (await cambioEstado.esFinalizada(cambioEstadoActual)) ?? null;
-                console.log("🚀 ~ file: llamada.js:84 ~ .then ~ fechaHoraEstadoFinalizado:", fechaHoraEstadoFinalizado)
-                if (fechaHoraEstadoFinalizado && (fechaHoraEstadoFinalizado >= new Date(params.fechaDesde) && fechaHoraEstadoFinalizado <= new Date(params.fechaHasta))) {
-                    llamadas.push(llamadaItem);
+                if (fechaHoraEstadoFinalizado && ((new Date(fechaHoraEstadoFinalizado)) >= new Date(params.fechaDesde) && (new Date(fechaHoraEstadoFinalizado)) <= new Date(params.fechaHasta))) {
+                    llamadasDentroPeriodo.push(llamadaItem);
                 }
             }
+
         })
         .catch((error) => {
             console.log(error);
         });
-    console.log("🚀 ~ file: llamada.js:103 ~ llamadas:", llamadas)
-    return llamadas;
+    return llamadasDentroPeriodo;
 };
 async function obtenerNombreCliente(llamadaId) {
     Llamada.findOne({
