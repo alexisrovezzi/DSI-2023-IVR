@@ -33,6 +33,14 @@ const Llamada = sequelize.define(
             type: DataTypes.STRING,
             allowNull: true
         },
+        detalleAccionRequerida: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
+        encuestaEnviada: {
+            type: DataTypes.BOOLEAN,
+            allowNull: true
+        },
         duracion: {
             type: DataTypes.INTEGER,
             allowNull: true,
@@ -75,9 +83,14 @@ async function esDePeriodo(params) {
     const llamadas = [];
     Llamada.findAll()
         .then(async (llamadas) => {
+            console.log("🚀 ~ file: llamada.js:78 ~ esDePeriodo ~ Llamada.findAll ~ llamadas:", llamadas)
             for (const llamadaItem of llamadas) {
-                let fechaHoraEstadoInicial = new Date(await cambioEstado.esEstadoInicial(llamadaItem.llamadaId));
-                if (fechaHoraEstadoInicial >= new Date(params.fechaDesde) && fechaHoraEstadoInicial <= new Date(params.fechaHasta)) {
+                console.log("🚀 ~ file: llamada.js:80 ~ esDePeriodo ~ Llamada.findAll ~ for (const llamadaItem of llamadas) ~ llamadaItem:", llamadaItem)
+                let cambioEstadoActual = await cambioEstado.esUltimoEstado(llamadaItem.llamadaId);
+                console.log("🚀 ~ file: llamada.js:82 ~ cambioEstado.esUltimoEstado ~ cambioEstadoActual:", cambioEstadoActual)
+                let fechaHoraEstadoFinalizado = (await cambioEstado.esFinalizada(cambioEstadoActual)) ?? null;
+                console.log("🚀 ~ file: llamada.js:84 ~ .then ~ fechaHoraEstadoFinalizado:", fechaHoraEstadoFinalizado)
+                if (fechaHoraEstadoFinalizado && (fechaHoraEstadoFinalizado >= new Date(params.fechaDesde) && fechaHoraEstadoFinalizado <= new Date(params.fechaHasta))) {
                     llamadas.push(llamadaItem);
                 }
             }
@@ -85,6 +98,7 @@ async function esDePeriodo(params) {
         .catch((error) => {
             console.log(error);
         });
+    console.log("🚀 ~ file: llamada.js:103 ~ llamadas:", llamadas)
     return llamadas;
 };
 async function obtenerNombreCliente(llamadaId) {
