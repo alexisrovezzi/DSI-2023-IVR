@@ -113,30 +113,7 @@ const obtenerDatosEncuesta = async (fechaRespuestaCliente, punterosRespuestasPos
 
 const generarCSV = async (payload) => {
     console.log("🚀 ~ file: gestorConsultarEncuesta.js:47 ~ generarCSV ~ consult:", (new Date()).toString())
-    payload = {
-        encabezado: [
-            { nombre: 'Juan Picapiedra', estado: 'Iniciada', duracion: 25 },
-        ],
-        saltoDeLinea: [{ nombre: '', estado: '', duracion: '', pregunta: "", respuesta: "" }],
-        respuestas: [
-            { nombre: '', estado: '', duracion: '', pregunta: "Descripción pregunta", respuesta: "Descripción respuesta seleccionada" },
-            { nombre: '', estado: '', duracion: '', pregunta: "", respuesta: "" },
-            { pregunta: "¿Cuál es la capital de Francia?", respuesta: "París." },
-            { nombre: '', estado: '', duracion: '', pregunta: "", respuesta: "" },
-            { pregunta: "¿Cuántos lados tiene un triángulo?", respuesta: "Tres." },
-            { nombre: '', estado: '', duracion: '', pregunta: "", respuesta: "" },
-            { pregunta: "¿Cuál es el color primario que se obtiene mezclando azul y amarillo?", respuesta: "Verde." },
-            { nombre: '', estado: '', duracion: '', pregunta: "", respuesta: "" },
-            { pregunta: "¿En qué continente se encuentra Brasil?", respuesta: "Sudamérica." },
-            { nombre: '', estado: '', duracion: '', pregunta: "", respuesta: "" },
-            { pregunta: "¿Cuál es el órgano encargado de bombear sangre en el cuerpo humano?", respuesta: "El corazón." },
-            { nombre: '', estado: '', duracion: '', pregunta: "", respuesta: "" },
-            { pregunta: '¿Cuál es el autor de la famosa novela "Cien años de soledad"?', respuesta: "Gabriel García Márquez." },
-        ]
-    }
-
     return await generadorCSV.newCSV(payload)
-
 }
 
 export { consultarEncuesta, tomarPeriodoAFiltrar, tomarSeleccionLlamada, opcionGenerarCSV }

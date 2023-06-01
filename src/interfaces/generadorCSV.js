@@ -1,18 +1,22 @@
-/*
-
-atributos:
-encabezado
-preguntas
-
-metodos:
-generarCSV()
-
-
-*/
-
 import * as csv from 'csv-writer'
 
 const newCSV = async (payload) => {
+    let respuestasYPreguntas = [
+        { nombre: '', estado: '', duracion: '', pregunta: "Descripción pregunta", respuesta: "Descripción respuesta seleccionada" },
+        { nombre: '', estado: '', duracion: '', pregunta: "", respuesta: "" }]
+    payload.respuestas.forEach(x => {
+        const newArray = [{pregunta: x.descPregunta, respuesta: x.descRespuesta},{ nombre: '', estado: '', duracion: '', pregunta: "", respuesta: "" } ]
+        console.log("🚀 ~ file: generadorCSV.js:9 ~ newCSV ~ newArray:", newArray)
+        respuestasYPreguntas = respuestasYPreguntas.concat(newArray);
+    });
+    console.log("🚀 ~ file: generadorCSV.js:9 ~ newCSV ~ respuestasYPreguntas:", respuestasYPreguntas)
+    let payloadDatos = {
+        encabezado: [
+            { nombre: payload.cliente, estado: payload.estadoActual, duracion: payload.duracion },
+        ],
+        saltoDeLinea: [{ nombre: '', estado: '', duracion: '', pregunta: "", respuesta: "" }],
+        respuestas: respuestasYPreguntas
+    }
 
     // Definir las columnas del archivo CSV
     const csvWriter = csv.createObjectCsvWriter({
@@ -27,9 +31,9 @@ const newCSV = async (payload) => {
 
     });
     // Escribe los datos en el archivo CSV
-    await csvWriter.writeRecords(payload.encabezado);
-    await csvWriter.writeRecords(payload.saltoDeLinea);
-     return csvWriter.writeRecords(payload.respuestas)
+    await csvWriter.writeRecords(payloadDatos.encabezado);
+    await csvWriter.writeRecords(payloadDatos.saltoDeLinea);
+     return csvWriter.writeRecords(payloadDatos.respuestas)
         
 }
 
