@@ -53,7 +53,11 @@ const tomarSeleccionLlamada = async (req, res) => {
 
 const opcionGenerarCSV = async (req, res) => {
     console.log("🚀 ~ file: gestorConsultarEncuesta.js:33 ~ opcionGenerarCSV ~ consult:", (new Date()).toString())
-    const payload = req.body;
+    let id = req?.params?.id;
+    if (!id) {
+        res.status(500).json({ message: "Fallo en el envio de llamada para generar csv." });
+    }
+    const payload = await importDatos(id);
     await generarCSV(payload);
     function devolverArchivo() {
         return new Promise((resolve, reject) => {
@@ -115,5 +119,43 @@ const generarCSV = async (payload) => {
     console.log("🚀 ~ file: gestorConsultarEncuesta.js:47 ~ generarCSV ~ consult:", (new Date()).toString())
     return await generadorCSV.newCSV(payload)
 }
+const importDatos = async (id)=>{
+    const llamadaId = id ?? -1;
+    try {
+        const datosLlamada = await buscarDatosLlamada(llamadaId);
+        let punterosRespuestasPosibles = datosLlamada.respuestas.map(x => x.respuestaPosibleId);
+        const datosEncuesta = await obtenerDatosEncuesta(datosLlamada.respuestas[0].fechaEncuesta, punterosRespuestasPosibles);
+        if (llamada && encuesta) {
+            const respuestas = [];
+            datosEncuesta.preguntasDeEncuesta.forEach(pregunta => {
+                let respuestaCnPregunta = {
+                    descPregunta: pregunta.descripcion,
+                    descRespuesta: (datosLlamada.respuestas.find(x => { return x.respuestaPosibleId === pregunta.respuestaPosibleId })).descRespuesta
+                }
+                respuestas.push(respuestaCnPregunta);
+            });
+            const response = {
+                cliente: datosLlamada.cliente,
+                estadoActual: datosLlamada.estadoActual,
+                duracion: datosLlamada.duracion,
+                respuestas: respuestas,
+                descEncuesta: datosEncuesta.descripcionEncuesta
+            };
+            return response
+        }
+        else return {message: "fallo"}
+
+    } catch (error) {
+        return {message: "Fallo en la busqueda de llamada." }
+    }
+}
 
 export { consultarEncuesta, tomarPeriodoAFiltrar, tomarSeleccionLlamada, opcionGenerarCSV }
+
+
+
+
+
+
+
+

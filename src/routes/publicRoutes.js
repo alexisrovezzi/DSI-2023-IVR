@@ -10,7 +10,7 @@ router.post(`/llamadas-cn-encuesta-resp`,gestor.tomarPeriodoAFiltrar)
 
 router.get(`/llamada/:id`,gestor.tomarSeleccionLlamada)
 
-router.post(`/llamada-csv`,gestor.opcionGenerarCSV)
+router.get(`/llamada-csv/:id`,gestor.opcionGenerarCSV)
 
 
 
