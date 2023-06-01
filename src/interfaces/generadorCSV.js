@@ -6,10 +6,8 @@ const newCSV = async (payload) => {
         { nombre: '', estado: '', duracion: '', pregunta: "", respuesta: "" }]
     payload.respuestas.forEach(x => {
         const newArray = [{pregunta: x.descPregunta, respuesta: x.descRespuesta},{ nombre: '', estado: '', duracion: '', pregunta: "", respuesta: "" } ]
-        console.log("🚀 ~ file: generadorCSV.js:9 ~ newCSV ~ newArray:", newArray)
         respuestasYPreguntas = respuestasYPreguntas.concat(newArray);
     });
-    console.log("🚀 ~ file: generadorCSV.js:9 ~ newCSV ~ respuestasYPreguntas:", respuestasYPreguntas)
     let payloadDatos = {
         encabezado: [
             { nombre: payload.cliente, estado: payload.estadoActual, duracion: payload.duracion },
