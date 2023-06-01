@@ -52,57 +52,62 @@ async function esVigente(encuestaId) {
             console.log(error);
         });
 }
-async function getDescripcion(encuestaId) {
-    Encuesta.findOne({
+async function getDescripcionEncuesta(encuestaId) {
+    let descripcion = "";
+    await Encuesta.findOne({
         where: {
             encuestaId: encuestaId
         }
     })
         .then((encuesta) => {
-            return encuesta?.descripcion;
+            descripcion = encuesta?.descripcion;
         })
         .catch((error) => {
             console.log(error);
         });
+    return descripcion;
 }
-async function obtenerPreguntas(encuestaId) {
-    const response = [];
-    pregunta.Pregunta.findAll({
+async function obtenerPreguntas(encuestaId, punterosRespuestasPosibles) {
+    const datosPreguntas = [];
+    await pregunta.Pregunta.findAll({
         where: {
             encuestaId: encuestaId
         }
     }).then(async (preguntas) => {
         for (const preguntaItem of preguntas) {
-            const preguntaDatos = {
-                preguntaId: preguntaItem.preguntaId,
-                descripcion: await pregunta.getDescripcion(preguntaItem.preguntaId)
+            const respuestaPosibleId = await pregunta.tieneRespuestasPosibles(preguntaItem.preguntaId, punterosRespuestasPosibles)
+            if (respuestaPosibleId > 0 ) {
+                const preguntaDatos = {
+                    respuestaPosibleId: respuestaPosibleId,
+                    preguntaId: preguntaItem.preguntaId,
+                    descripcion: await pregunta.getDescripcion(preguntaItem.preguntaId),
+                }
+                datosPreguntas.push(preguntaDatos);
             }
-            response.push(preguntaDatos);
         }
 
     }).catch((error) => {
         console.log(error);
     });
-    return response;
+    return datosPreguntas;
 }
-async function esEncuestaDeCliente(idRespuestasPosibles) {
-    Encuesta.findAll()
+async function esEncuestaDeCliente(fechaEncuesta) {
+    let encuestaDelCliente = null;
+    await Encuesta.findAll()
         .then(async (encuestas) => {
+            let encuestasCnMayoresFinVigencias = [];
             for (const encuesta of encuestas) {
-                const payload = { encuestaId: encuesta.encuestaId, respuestasDeClientePosiblesId: idRespuestasPosibles };
-                let esEncuestaDeClienteBandera = await pregunta.esEncuestaDeCliente(payload);
-                if (esEncuestaDeClienteBandera) {
-                    return encuesta.encuestaId;
-                    break;
-                }
+                if ((new Date(encuesta.fechaFinVigencia)) >= (new Date(fechaEncuesta))) encuestasCnMayoresFinVigencias.push(encuesta.fechaFinVigencia);
             }
-            return -1;
+            let fechaMasAntigua = new Date(Math.min.apply(null, encuestasCnMayoresFinVigencias));
+            encuestaDelCliente = encuestas.find((x) => { return (x.fechaFinVigencia.toString()) === (fechaMasAntigua.toString()) })
         })
         .catch((error) => {
             console.log(error);
         });
+    return encuestaDelCliente;
 }
 
 
 
-export { esVigente, getDescripcion, obtenerPreguntas, esEncuestaDeCliente }
+export { esVigente, getDescripcionEncuesta, obtenerPreguntas, esEncuestaDeCliente }

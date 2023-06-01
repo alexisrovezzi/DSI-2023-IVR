@@ -42,17 +42,19 @@ const Cliente = sequelize.define(
 );
 
 async function getNombre(clienteId){
-    Cliente.findOne({
+    let nombreCliente = "Undefined";
+    await Cliente.findOne({
         where: {
           clienteId: clienteId
         }
       })
       .then((cliente) => {
-        return cliente?.nombreCompleto ?? "Undefined";
+        nombreCliente = cliente?.nombreCompleto;
       })
       .catch((error) => {
         console.log(error);
       });
+    return nombreCliente;
 }
 
 

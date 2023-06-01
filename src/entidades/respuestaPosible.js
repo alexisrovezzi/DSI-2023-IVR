@@ -42,17 +42,19 @@ const RespuestaPosible = sequelize.define(
 );
 
 async function getDescripcionRta(respuestaPosibleId) {
-    RespuestaPosible.findOne({
+    let descripcionRTA = "";
+    await RespuestaPosible.findOne({
         where: {
             respuestaPosibleId: respuestaPosibleId
         }
     })
         .then((respPosible) => {
-            return respPosible?.descripcion ?? "Undefined";
+            descripcionRTA = respPosible?.descripcion ?? "Undefined";
         })
         .catch((error) => {
             console.log(error);
         });
+    return descripcionRTA;
 }
 
 export {RespuestaPosible, getDescripcionRta }

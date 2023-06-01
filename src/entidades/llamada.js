@@ -113,29 +113,42 @@ async function getEstadoActual(llamadaId) {
     return await cambioEstado.getNombreEstado(ultimoCambioEstado);
 }
 async function getDuracion(llamadaId) {
-    Llamada.findOne({
+    let duracion = "";
+    await Llamada.findOne({
         where: {
             llamadaId: llamadaId
         }
     })
         .then((llamada) => {
-            return (llamada?.duracion ?? '0') + ' min';
+            duracion = (llamada?.duracion ?? '0') + ' Min';
         })
         .catch((error) => {
             console.log(error);
         });
+    return duracion;
 }
 async function getRespuestas(llamadaId) {
-    await respuestaDeCliente.obtenerDatosDeRespuestas(llamadaId)
+    return await respuestaDeCliente.obtenerDatosDeRespuestas(llamadaId)
 }
 
 async function obtenerDatosGeneralesLlamada(llamadaId) {
-    const response = {};
-    response.cliente = cliente.getNombre(llamadaId);
-    response.estadoActual = getEstadoActual(llamadaId);
-    response.duracion = getDuracion(llamadaId);
-    response.respuestas = await getRespuestas(llamadaId);
-    return response;
+    let datosGeneralesLlamada = {};
+    await Llamada.findOne({
+        where: {
+            llamadaId: llamadaId
+        }
+    })
+        .then(async ({clienteId, llamadaId}) => {
+            datosGeneralesLlamada.cliente = await cliente.getNombre(clienteId);
+            datosGeneralesLlamada.estadoActual = await getEstadoActual(llamadaId);
+            datosGeneralesLlamada.duracion = await getDuracion(llamadaId);
+            datosGeneralesLlamada.respuestas = await getRespuestas(llamadaId);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+
+    return datosGeneralesLlamada;
 }
 
 export { esDePeriodo, tieneEncuestaRespondida, obtenerNombreCliente, getEstadoActual, getDuracion, getRespuestas, obtenerDatosGeneralesLlamada }

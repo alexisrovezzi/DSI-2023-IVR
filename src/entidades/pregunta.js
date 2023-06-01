@@ -40,49 +40,39 @@ const Pregunta = sequelize.define(
 );
 
 async function getDescripcion(preguntaId) {
-    Pregunta.findOne({
+    let descripcion = ""
+    await Pregunta.findOne({
         where: {
             preguntaId: preguntaId
         }
     })
         .then((pregunta) => {
-            return pregunta?.pregunta ?? "Undefined";
+            descripcion = pregunta?.pregunta ?? "Undefined";
         })
         .catch((error) => {
             console.log(error);
         });
+    return descripcion;
 }
 
-async function esEncuestaDeCliente(params) {
-    await Pregunta.findAll({
-        where: {
-            encuestaId: params.encuestaId
-        }
-    })
-        .then(async (preguntas) => {
-            for (const pregunta of preguntas) {
-                const idRespuestasPosibles = await tieneRespuestasPosibles(pregunta.preguntaId);
-                const esEncuestaDeCliente =  params.respuestasDeClientePosiblesId.some(x => idRespuestasPosibles.includes(x))
-                return esEncuestaDeCliente;
-            }
-        })
-        .catch((error) => {
-            console.log(error);
-        });
-};
-
-async function tieneRespuestasPosibles(preguntaId) {
+async function tieneRespuestasPosibles(preguntaId, punterosRespuestasPosiblesParam) {
+    let punteroRespuestaPosibleDePregunta = -1;
     await respuestaPosible.RespuestaPosible.findAll({
         where: {
             preguntaId: preguntaId
         }
     })
         .then((respuestasPosibles) => {
-            return respuestasPosibles.map(x => x.respuestaPosibleId);
+            let punterosRespuestasPosiblesDePregunta = respuestasPosibles.map(x => x.respuestaPosibleId);
+            punteroRespuestaPosibleDePregunta = punterosRespuestasPosiblesParam.filter(function (id) {
+                return punterosRespuestasPosiblesDePregunta.includes(id);
+            })[0];
         })
         .catch((error) => {
             console.log(error);
         });
+    return punteroRespuestaPosibleDePregunta;
+
 };
 
-export {Pregunta, getDescripcion, esEncuestaDeCliente, tieneRespuestasPosibles }
+export { Pregunta, getDescripcion, tieneRespuestasPosibles }

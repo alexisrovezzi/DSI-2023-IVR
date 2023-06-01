@@ -92,7 +92,6 @@ async function esUltimoEstado(llamadaId) {
     order: [['fechaHoraInicio', 'DESC']]
   })
     .then((cambioEstado) => {
-      console.log("🚀 ~ file: cambioEstado.js:96 ~ .then ~ cambioEstado.cambioEstadoId:", cambioEstado.cambioEstadoId, "llamadaId", llamadaId)
       ultimoCambioEstadoId = cambioEstado.cambioEstadoId;
     })
     .catch((error) => {
@@ -132,8 +131,20 @@ async function newCambioEstado(payload) {
       console.error('Error creating cliente:', error);
     });
 }
-async function getNombreEstado(estadoId) {
-  return await estado.getNombre(estadoId);
+async function getNombreEstado(cambioEstadoId) {
+  let estadoNombre = "";
+  await CambioEstado.findOne({
+    where: {
+      cambioEstadoId: cambioEstadoId
+    }
+  })
+    .then( async (cambioEstado) => {
+      estadoNombre =  await estado.getNombre(cambioEstado?.estadoId)
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  return estadoNombre;
 }
 
 export { CambioEstado, esFinalizada, esEstadoInicial, esUltimoEstado, getFechaHoraInicio, newCambioEstado, getNombreEstado }

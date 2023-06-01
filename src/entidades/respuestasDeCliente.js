@@ -15,7 +15,7 @@ getFechaEncuesta()
 
 import { DataTypes } from "sequelize";
 import { sequelize } from '../data/config.js';
-import * as rp from './respuestaPosible.js';
+import * as respuestaPosible from './respuestaPosible.js';
 
 const RespuestaDeCliente = sequelize.define(
     "RespuestasDeCliente",
@@ -45,21 +45,23 @@ const RespuestaDeCliente = sequelize.define(
 );
 
 async function getFechaEncuesta(respuestaDeClienteId) {
-    RespuestaDeCliente.findOne({
+    let fechaEncuesta = "";
+    await RespuestaDeCliente.findOne({
         where: {
             respuestaDeClienteId: respuestaDeClienteId
         }
     })
         .then((respuestaDeCliente) => {
-            return respuestaDeCliente?.fechaEncuesta;
+            fechaEncuesta = respuestaDeCliente?.fechaEncuesta;
         })
         .catch((error) => {
             console.log(error);
         });
+    return fechaEncuesta;
 }
 
 async function obtenerDescripcionRespuesta(respuestaPosibleId) {
-    return await rp.getDescripcionRta(respuestaPosibleId)
+    return await respuestaPosible.getDescripcionRta(respuestaPosibleId)
 }
 
 async function obtenerDatosDeRespuestas(llamadaId) {
@@ -71,20 +73,18 @@ async function obtenerDatosDeRespuestas(llamadaId) {
         }
     })
         .then(async (respuestasDeClienteParam) => {
-            respuestasDeCliente = respuestasDeClienteParam.map(x => { x.respuestaDeClienteId, respuestaPosibleId })
-
+            respuestasDeCliente = respuestasDeClienteParam.map((x) => { return { respuestaDeClienteId: x.respuestaDeClienteId, respuestaPosibleId: x.respuestaPosibleId } })
         })
         .catch((error) => {
             console.log(error);
         });
-
-    for (const respuesta of respuestasDeCliente) {
-        let respuestaCnFecha = respuesta;
-        respuestaCnFecha.fechaEncuesta = await getFechaEncuesta(respuesta.respuestaDeClienteId);
-        respuestaCnFecha.descripcionRta = await obtenerDescripcionRespuesta(respuesta.respuestaPosibleId);
-        respuestasDeClienteCnDatos.push(respuestaCnFecha);
+    for (const respuestaCliente of respuestasDeCliente) {
+        let respuestaCnDatos = respuestaCliente;
+        respuestaCnDatos.fechaEncuesta = await getFechaEncuesta(respuestaCliente.respuestaDeClienteId);
+        respuestaCnDatos.descRespuesta = await obtenerDescripcionRespuesta(respuestaCliente.respuestaPosibleId);
+        respuestasDeClienteCnDatos.push(respuestaCnDatos);
     }
     return respuestasDeClienteCnDatos;
 }
 
-export {RespuestaDeCliente, obtenerDescripcionRespuesta, getFechaEncuesta, obtenerDatosDeRespuestas }
+export { RespuestaDeCliente, obtenerDescripcionRespuesta, getFechaEncuesta, obtenerDatosDeRespuestas }

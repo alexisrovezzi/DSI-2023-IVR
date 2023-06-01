@@ -22,10 +22,35 @@ const tomarPeriodoAFiltrar = async (req, res) => {
 const tomarSeleccionLlamada = async (req, res) => {
     console.log("🚀 ~ file: gestorConsultarEncuesta.js:24 ~ tomarSeleccionLlamada ~ consult:", (new Date()).toString())
     const llamadaId = req.params.id ?? -1;
-    const llamada = await buscarDatosLlamada(llamadaId);
-    const encuesta = await obtenerDatosEncuesta(llamada.fechaRespuestaCliente)
-    if (response) res.status(200).json(response);
-    else res.status(404).json({ message: "Llamada no encontrada."});
+    try {
+        const datosLlamada = await buscarDatosLlamada(llamadaId);
+        console.log("🚀 ~ file: gestorConsultarEncuesta.js:26 ~ tomarSeleccionLlamada ~ datosLlamada:", datosLlamada)
+        let punterosRespuestasPosibles = datosLlamada.respuestas.map(x => x.respuestaPosibleId);
+        const datosEncuesta = await obtenerDatosEncuesta(datosLlamada.respuestas[0].fechaEncuesta, punterosRespuestasPosibles);
+        console.log("🚀 ~ file: gestorConsultarEncuesta.js:29 ~ tomarSeleccionLlamada ~ datosEncuesta:", datosEncuesta)
+        if (llamada && encuesta) {
+            const respuestas = [];
+            datosEncuesta.preguntasDeEncuesta.forEach(pregunta => {
+                let respuestaCnPregunta = {
+                    descPregunta: pregunta.descripcion,
+                    descRespuesta: (datosLlamada.respuestas.find(x => { return x.respuestaPosibleId === pregunta.respuestaPosibleId })).descRespuesta
+                }
+                respuestas.push(respuestaCnPregunta);
+            });
+            const response = {
+                cliente: datosLlamada.cliente,
+                estadoActual: datosLlamada.estadoActual,
+                duracion: datosLlamada.duracion,
+                respuestas: respuestas,
+                descEncuesta: datosEncuesta.descripcionEncuesta
+            };
+            res.status(200).json(response)
+        }
+        else res.status(404).json({ message: "Llamada no encontrada." });
+
+    } catch (error) {
+        res.status(500).json({ message: "Fallo en la busqueda de llamada." });
+    }
 }
 
 const opcionGenerarCSV = async (req, res) => {
@@ -71,33 +96,14 @@ const buscarDatosLlamada = async (llamadaId) => {
     console.log("🚀 ~ file: gestorConsultarEncuesta.js:25 ~ buscarDatosLlamada ~ consult:", (new Date()).toString())
     let datosLlamada = {};
     datosLlamada = await llamada.obtenerDatosGeneralesLlamada(llamadaId);
-    let datosEncuesta = {};
-    datosEncuesta = obtenerDatosEncuesta(datosLlamada.respuestasDeCliente[0].fechaRespuestaCliente);
-    const response = {}
-    // let respuesta = {
-    //     cliente: "Juan Picapiedra",
-    //     estadoActual: "Iniciado",
-    //     duracion: "25min",
-    //     respuestas: [
-    //         {
-    //             descRespuesta: "Sudamérica.",
-    //             descPregunta: "¿En qué continente se encuentra Brasil?",
-    //         },
-    //         {
-    //             descRespuesta: "París.",
-    //             descPregunta: "¿Cuál es la capital de Francia?",
-    //         },
-    //     ],
-    //     descEncuesta: "Cultura general"
-    // };
-    res.status(200).json(response);
+    return datosLlamada;
 }
 
-const obtenerDatosEncuesta = async (fechaRespuestaCliente) => {
+const obtenerDatosEncuesta = async (fechaRespuestaCliente, punterosRespuestasPosibles) => {
     const encuestaDatos = {};
     encuestaDatos.encuestaDeCliente = await encuesta.esEncuestaDeCliente(fechaRespuestaCliente);
-    encuestaDatos.descripcionEncuesta =  await  encuesta.getDescripcionEncuesta(encuestaDeCliente);
-    encuestaDatos.preguntasDeEncuesta = await encuesta.obtenerPreguntas(encuestaDeCliente);
+    encuestaDatos.descripcionEncuesta = await encuesta.getDescripcionEncuesta(encuestaDatos.encuestaDeCliente.encuestaId);
+    encuestaDatos.preguntasDeEncuesta = await encuesta.obtenerPreguntas(encuestaDatos.encuestaDeCliente.encuestaId, punterosRespuestasPosibles);
     return encuestaDatos;
 }
 

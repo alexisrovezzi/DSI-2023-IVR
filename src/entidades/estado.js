@@ -48,17 +48,19 @@ async function esFinalizada(estadoId) {
     return estadoEsFinalizada;
 }
 async function getNombre(estadoId) {
-    Estado.findOne({
+    let nombreEstado = "";
+    await Estado.findOne({
         where: {
             estadoId: estadoId,
         }
       })
       .then((estado) => {
-        return estado?.nombre ?? "Undefined";
+        nombreEstado = estado?.nombre;
       })
       .catch((error) => {
         console.log(error);
       });
+    return nombreEstado;
 }
 
 
