@@ -2,35 +2,34 @@ import fs, { existsSync } from "fs";
 import * as generadorCSV from '../entidades/generadorCSV.js'
 import * as llamada from '../entidades/llamada.js';
 import * as encuesta from '../entidades/encuesta.js';
+import { response } from "express";
+
 
 
 const consultarEncuesta = async (req, res) => {
-    let consult = (new Date()).toString();
-    console.log("🚀 ~ file: gestorConsultarEncuesta.js:9 ~ consultarEncuesta ~ consult:", consult)
+    console.log("🚀 ~ file: gestorConsultarEncuesta.js:9 ~ consultarEncuesta ~ consult:", (new Date()).toString())
     res.status(200).json({ message: "API-IVR Publica" })
 }
 
 const tomarPeriodoAFiltrar = async (req, res) => {
     const periodo = req.body;
-    let consult = (new Date()).toString();
-    console.log("🚀 ~ file: gestorConsultarEncuesta.js:6 ~ tomarPeriodoAFiltrar ~ consult:", consult)
-    const respuesta = await buscarLlamadasConEncuestaRespondida(periodo);
-    if (respuesta.llamadas.length > 0) res.status(200).json(respuesta);
+    console.log("🚀 ~ file: gestorConsultarEncuesta.js:6 ~ tomarPeriodoAFiltrar ~ consult:", (new Date()).toString())
+    const llamadasCnEncuestaRespondida = await buscarLlamadasConEncuestaRespondida(periodo);
+    if ((llamadasCnEncuestaRespondida?.length ?? 0) > 0) res.status(200).json(llamadasCnEncuestaRespondida);
     else res.status(404).json({ mensaje: "No hay llamadas en el período con encuestas respondidas." });
 };
 
 const tomarSeleccionLlamada = async (req, res) => {
-    let consult = (new Date()).toString();
-    console.log("🚀 ~ file: gestorConsultarEncuesta.js:24 ~ tomarSeleccionLlamada ~ consult:", consult)
-    const llamadaId = req.params.llamadaId;
+    console.log("🚀 ~ file: gestorConsultarEncuesta.js:24 ~ tomarSeleccionLlamada ~ consult:", (new Date()).toString())
+    const llamadaId = req.params.id ?? -1;
     const llamada = await buscarDatosLlamada(llamadaId);
     const encuesta = await obtenerDatosEncuesta(llamada.fechaRespuestaCliente)
-    res.status(200).json(llamada);
+    if (response) res.status(200).json(response);
+    else res.status(404).json({ message: "Llamada no encontrada."});
 }
 
 const opcionGenerarCSV = async (req, res) => {
-    let consult = (new Date()).toString();
-    console.log("🚀 ~ file: gestorConsultarEncuesta.js:33 ~ opcionGenerarCSV ~ consult:", consult)
+    console.log("🚀 ~ file: gestorConsultarEncuesta.js:33 ~ opcionGenerarCSV ~ consult:", (new Date()).toString())
     const payload = req.body;
     if (await generarCSV(payload)) {
         res.download('archivo.csv', 'archivo.csv', (err) => {
@@ -44,8 +43,7 @@ const opcionGenerarCSV = async (req, res) => {
 }
 
 const finCU44 = async () => {
-    let consult = (new Date()).toString();
-    console.log("🚀 ~ file: gestorConsultarEncuesta.js:48 ~ finCU44 ~ consult:", consult)
+    console.log("🚀 ~ file: gestorConsultarEncuesta.js:48 ~ finCU44 ~ consult:", (new Date()).toString())
     const filePath = '../../archivo.csv';
     fs.unlink(filePath, (err) => {
         if (err) {
@@ -59,31 +57,18 @@ const finCU44 = async () => {
 }
 
 const buscarLlamadasConEncuestaRespondida = async (periodo) => {
-    let consult = (new Date()).toString();
-    console.log("🚀 ~ file: gestorConsultarEncuesta.js:63 ~ buscarLlamadasConEncuestaRespondida ~ consult:", consult, "periodo", periodo)
-    let llamadas = [];
-    llamadas = await llamada.esDePeriodo(periodo);
-    console.log("🚀 ~ file: gestorConsultarEncuesta.js:66 ~ buscarLlamadasConEncuestaRespondida ~ llamadas:", llamadas)
-    // llamadas = await llamada.tieneEncuestaRespondida(llamadas);
-    const response = { llamadas }
-    // let llamadas = [
-    //     {
-    //         llamadaId: 1,
-    //         descripcionOperador: "Primera llamada cliente 1",
-    //         duracion: "36min",
-    //     },
-    //     {
-    //         llamadaId: 2,
-    //         descripcionOperador: "Segunda llamada cliente 1",
-    //         duracion: "24min",
-    //     },
-    // ]
+    console.log("🚀 ~ file: gestorConsultarEncuesta.js:63 ~ buscarLlamadasConEncuestaRespondida ~ consult:", (new Date()).toString(), "periodo", periodo)
+    let llamadasEnPeriodo = [];
+    llamadasEnPeriodo = await llamada.esDePeriodo(periodo);
+    let llamadasConEncuesta = [];
+    llamadasConEncuesta = await llamada.tieneEncuestaRespondida(llamadasEnPeriodo);
+    let response = [];
+    response = llamadasConEncuesta ?? [];
     return response;
 }
 
 const buscarDatosLlamada = async (llamadaId) => {
-    let consult = (new Date()).toString();
-    console.log("🚀 ~ file: gestorConsultarEncuesta.js:25 ~ buscarDatosLlamada ~ consult:", consult)
+    console.log("🚀 ~ file: gestorConsultarEncuesta.js:25 ~ buscarDatosLlamada ~ consult:", (new Date()).toString())
     let datosLlamada = {};
     datosLlamada = await llamada.obtenerDatosGeneralesLlamada(llamadaId);
     let datosEncuesta = {};
@@ -117,8 +102,7 @@ const obtenerDatosEncuesta = async (fechaRespuestaCliente) => {
 }
 
 const generarCSV = async (req, res) => {
-    let consult = (new Date()).toString();
-    console.log("🚀 ~ file: gestorConsultarEncuesta.js:47 ~ generarCSV ~ consult:", consult)
+    console.log("🚀 ~ file: gestorConsultarEncuesta.js:47 ~ generarCSV ~ consult:", (new Date()).toString())
     let payload = {
         encabezado: [
             { nombre: 'Juan Picapiedra', estado: 'Iniciada', duracion: 25 },

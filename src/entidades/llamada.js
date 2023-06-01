@@ -60,24 +60,22 @@ const Llamada = sequelize.define(
     }
 );
 
-async function tieneEncuestaRespondida(llamadasArray) {
-    for (const llamadaItem of llamadasArray) {
-        respuestaDeCliente.RespuestaDeCliente.findAll()
-        .then(async (llamadas) => {
-            for (const llamadaItem of llamadas) {
-                let fechaHoraEstadoInicial = new Date(await cambioEstado.esEstadoInicial(llamadaItem.llamadaId));
-                if (fechaHoraEstadoInicial >= new Date(params.fechaDesde) && fechaHoraEstadoInicial <= new Date(params.fechaHasta)) {
-                    llamadas.push(llamadaItem);
-                }
+async function tieneEncuestaRespondida(llamadasEnPeriodo) {
+    let llamadasConEncuesta = [];
+    for (const llamadaItem of llamadasEnPeriodo) {
+        await respuestaDeCliente.RespuestaDeCliente.findAll({
+            where: {
+                llamadaId: llamadaItem.llamadaId
             }
         })
-        .catch((error) => {
-            console.log(error);
-        });
+            .then(async (respuestasDeCliente) => {
+                if (respuestasDeCliente.length > 0) llamadasConEncuesta.push(llamadaItem)
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     }
-    /* 
-        tiene encuesta respondida deberia ver si posee punteros
-     */
+    return llamadasConEncuesta;
 };
 async function esDePeriodo(params) {
     const llamadasDentroPeriodo = [];
