@@ -12,7 +12,7 @@ generarCSV()
 
 import * as csv from 'csv-writer'
 
-const generarCSV = async (payload) => {
+const newCSV = async (payload) => {
 
     // Definir las columnas del archivo CSV
     const csvWriter = csv.createObjectCsvWriter({
@@ -24,7 +24,6 @@ const generarCSV = async (payload) => {
             { id: 'pregunta', title: ' ' },
             { id: 'respuesta', title: ' ' },
         ],
-        //header: payload.sections.flatMap(section => section.header.map(column => ({ id: column, title: column }))),
 
     });
     // Escribe los datos en el archivo CSV
@@ -32,7 +31,6 @@ const generarCSV = async (payload) => {
     await csvWriter.writeRecords(payload.saltoDeLinea);
      return csvWriter.writeRecords(payload.respuestas)
         
-
 }
 
-export { generarCSV };
+export { newCSV };

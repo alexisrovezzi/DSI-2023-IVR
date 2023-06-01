@@ -1,5 +1,5 @@
 import fs, { existsSync } from "fs";
-import * as generadorCSV from '../entidades/generadorCSV.js'
+import * as generadorCSV from '../interfaces/generadorCSV.js'
 import * as llamada from '../entidades/llamada.js';
 import * as encuesta from '../entidades/encuesta.js';
 import { response } from "express";
@@ -56,20 +56,26 @@ const tomarSeleccionLlamada = async (req, res) => {
 const opcionGenerarCSV = async (req, res) => {
     console.log("🚀 ~ file: gestorConsultarEncuesta.js:33 ~ opcionGenerarCSV ~ consult:", (new Date()).toString())
     const payload = req.body;
-    if (await generarCSV(payload)) {
-        res.download('archivo.csv', 'archivo.csv', (err) => {
+    await generarCSV(payload);
+    function devolverArchivo() {
+        return new Promise((resolve, reject) => {
+          res.download('archivo.csv', 'archivo.csv', (err) => {
             if (err) {
-                console.error('Error al descargar el archivo CSV:', err);
-                res.status(500).send('Error al descargar el archivo CSV');
+              console.error('Error al descargar el archivo CSV:', err);
+              reject('Error al descargar el archivo CSV');
+            } else {
+              resolve();
             }
+          });
         });
-    };
-    finCU44();
+      }
+      await devolverArchivo();
+      finCU44();
 }
 
 const finCU44 = async () => {
     console.log("🚀 ~ file: gestorConsultarEncuesta.js:48 ~ finCU44 ~ consult:", (new Date()).toString())
-    const filePath = '../../archivo.csv';
+    const filePath = 'archivo.csv';
     fs.unlink(filePath, (err) => {
         if (err) {
             console.error('Error al borrar el archivo:', err);
@@ -107,9 +113,9 @@ const obtenerDatosEncuesta = async (fechaRespuestaCliente, punterosRespuestasPos
     return encuestaDatos;
 }
 
-const generarCSV = async (req, res) => {
+const generarCSV = async (payload) => {
     console.log("🚀 ~ file: gestorConsultarEncuesta.js:47 ~ generarCSV ~ consult:", (new Date()).toString())
-    let payload = {
+    payload = {
         encabezado: [
             { nombre: 'Juan Picapiedra', estado: 'Iniciada', duracion: 25 },
         ],
@@ -131,14 +137,7 @@ const generarCSV = async (req, res) => {
         ]
     }
 
-    generadorCSV.generarCSV(payload)
-        .then(() => {
-            return true;
-        })
-        .catch((err) => {
-            console.error('Error al escribir los registros en el archivo CSV:', err);
-            res.status(500).send('Error al generar el archivo CSV');
-        });
+    return await generadorCSV.newCSV(payload)
 
 }
 
