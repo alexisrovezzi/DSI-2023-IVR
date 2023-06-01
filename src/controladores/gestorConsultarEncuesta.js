@@ -24,10 +24,8 @@ const tomarSeleccionLlamada = async (req, res) => {
     const llamadaId = req.params.id ?? -1;
     try {
         const datosLlamada = await buscarDatosLlamada(llamadaId);
-        console.log("🚀 ~ file: gestorConsultarEncuesta.js:26 ~ tomarSeleccionLlamada ~ datosLlamada:", datosLlamada)
         let punterosRespuestasPosibles = datosLlamada.respuestas.map(x => x.respuestaPosibleId);
         const datosEncuesta = await obtenerDatosEncuesta(datosLlamada.respuestas[0].fechaEncuesta, punterosRespuestasPosibles);
-        console.log("🚀 ~ file: gestorConsultarEncuesta.js:29 ~ tomarSeleccionLlamada ~ datosEncuesta:", datosEncuesta)
         if (llamada && encuesta) {
             const respuestas = [];
             datosEncuesta.preguntasDeEncuesta.forEach(pregunta => {
